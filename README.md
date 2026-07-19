@@ -55,6 +55,7 @@ use least-privilege permissions, and produce an audit event for every action.
 - [Integration implementation notes](docs/INTEGRATIONS.md)
 - [Developer handoff log](docs/HANDOFF.md)
 - [Hackathon submission draft](docs/HACKATHON_SUBMISSION.md)
+- [Security policy](SECURITY.md)
 
 ## Repository status
 
