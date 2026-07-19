@@ -14,6 +14,11 @@ Initial endpoint:
 GET https://graph.microsoft.com/v1.0/deviceManagement/managedDevices
 ```
 
+`server/connectors/microsoft-graph.ts` now implements the read-only endpoint,
+pagination, canonical mapping, error handling, and shared concurrent collection.
+It accepts an injected token provider and is intentionally not activated until a
+non-production tenant and credential flow are available.
+
 The least privileged permission documented for this collection is
 `DeviceManagementManagedDevices.Read.All`. Additional screens may need
 `User.Read.All`, `Directory.Read.All`, `Organization.Read.All`, or

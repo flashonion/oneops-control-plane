@@ -12,7 +12,10 @@ An Express API now collects demo providers in parallel, caches snapshots, expose
 health/connector endpoints, and falls back to stale data after a failed refresh.
 The ticket queue opens an enriched context drawer with its linked device. Search
 covers devices and tickets, and keyboard open/close shortcuts work. The analytics
-chart is lazy-loaded. The production build, lint, and six automated tests pass.
+chart is lazy-loaded.
+`MicrosoftGraphConnector` implements read-only Intune device pagination and
+mapping behind an injected token provider. It is not active in demo mode. The
+production build, lint, and eight automated tests pass.
 
 Important files:
 
@@ -26,6 +29,8 @@ Important files:
 - `server/app.ts`: local API routes and security headers
 - `server/snapshot-store.ts`: shared in-flight request and TTL cache
 - `server/connectors/demo.ts`: realistic zero-credential provider simulation
+- `server/connectors/microsoft-graph.ts`: tested Intune/Graph adapter awaiting a
+  non-production token provider
 - `docs/ARCHITECTURE.md`: target production design and identity rules
 - `docs/INTEGRATIONS.md`: official-provider research and constraints
 - `docs/HACKATHON_SUBMISSION.md`: pitch, demo script, and technical highlights
