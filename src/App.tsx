@@ -8,8 +8,9 @@ import {
 import {
   Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
-import { connectors, devices, tickets, trend } from './data'
-import type { CompanyId, Device, DeviceStatus, SourceId } from './types'
+import { trend } from './data'
+import { useSnapshot } from './hooks/useSnapshot'
+import type { CompanyId, Connector, Device, DeviceStatus, SourceId, Ticket } from './types'
 
 type View = 'overview' | 'devices' | 'tickets' | 'integrations'
 
@@ -88,15 +89,22 @@ function DevicesView({ rows, onSelect }: { rows: Device[]; onSelect: (d: Device)
   return <><div className="page-heading"><div><p className="eyebrow">Unified inventory</p><h1>Devices</h1><p>One record per endpoint, reconciled across every source.</p></div><button className="primary-btn"><RefreshCw size={16} />Sync inventory</button></div><div className="filter-bar"><div className="segmented">{(['all','healthy','warning','critical','offline'] as const).map((item) => <button key={item} className={status === item ? 'active' : ''} onClick={() => setStatus(item)}>{item[0].toUpperCase() + item.slice(1)}</button>)}</div><span>{visible.length} records</span></div><section className="panel full-table"><DeviceTable rows={visible} onSelect={onSelect} /></section></>
 }
 
-function TicketsView() {
+function TicketsView({ tickets }: { tickets: Ticket[] }) {
   return <><div className="page-heading"><div><p className="eyebrow">Service desk</p><h1>Tickets</h1><p>Prioritised by SLA, user impact, and device health.</p></div><button className="primary-btn"><TicketCheck size={16} />New ticket</button></div><section className="ticket-stats"><div><strong>38</strong><span>Open</span></div><div><strong>6</strong><span>Near SLA</span></div><div><strong>14m</strong><span>First response</span></div><div><strong>92%</strong><span>SLA achieved</span></div></section><section className="panel ticket-list"><header className="panel-header"><div><h2>Priority queue</h2><p>Live from Atera, enriched with identity and device context</p></div></header>{tickets.map((ticket) => <button className="ticket-row" key={ticket.id}><span className={`ticket-priority ${ticket.priority.toLowerCase()}`} /><span className="ticket-id">{ticket.id}</span><span className="ticket-main"><strong>{ticket.title}</strong><small>{ticket.requester} · {companyNames[ticket.company]}</small></span><span className={`priority-tag ${ticket.priority === 'Urgent' ? 'urgent' : ''}`}>{ticket.priority}</span><span className="ticket-age"><Clock3 size={14}/>{ticket.age}</span><ChevronRight size={17}/></button>)}</section></>
 }
 
-function IntegrationsView() {
-  return <><div className="page-heading"><div><p className="eyebrow">Data fabric</p><h1>Integrations</h1><p>Monitor provider health, coverage, and synchronisation.</p></div><button className="primary-btn"><PlugZap size={16} />Add connection</button></div><section className="connector-grid">{connectors.map((connector) => <article className="connector-card" key={connector.id}><div className="connector-head"><span className="connector-mark" style={{ background: connector.color }}>{connector.name.slice(0, 1)}</span><button className="icon-btn"><MoreHorizontal size={18}/></button></div><h2>{connector.name}</h2><p>{connector.detail}</p><dl><div><dt>Status</dt><dd className={connector.status === 'Connected' ? 'ok-text' : 'warn-text'}><i />{connector.status}</dd></div><div><dt>Records</dt><dd>{connector.records}</dd></div><div><dt>Last sync</dt><dd>{connector.synced}</dd></div></dl><button className="secondary-btn full-width">Manage connection <ChevronRight size={16}/></button></article>)}</section><section className="integration-callout"><span><ShieldCheck size={22}/></span><div><strong>Secrets stay server-side</strong><p>Provider credentials are encrypted at rest and never exposed to the browser.</p></div><button className="secondary-btn">Security settings</button></section></>
+function relativeSyncTime(value: string) {
+  if (!value.includes('T')) return value
+  const seconds = Math.max(0, Math.round((Date.now() - new Date(value).getTime()) / 1000))
+  return seconds < 60 ? `${seconds} sec ago` : `${Math.floor(seconds / 60)} min ago`
+}
+
+function IntegrationsView({ connectors }: { connectors: Connector[] }) {
+  return <><div className="page-heading"><div><p className="eyebrow">Data fabric</p><h1>Integrations</h1><p>Monitor provider health, coverage, and synchronisation.</p></div><button className="primary-btn"><PlugZap size={16} />Add connection</button></div><section className="connector-grid">{connectors.map((connector) => <article className="connector-card" key={connector.id}><div className="connector-head"><span className="connector-mark" style={{ background: connector.color }}>{connector.name.slice(0, 1)}</span><button className="icon-btn"><MoreHorizontal size={18}/></button></div><h2>{connector.name}</h2><p>{connector.detail}</p><dl><div><dt>Status</dt><dd className={connector.status === 'Connected' ? 'ok-text' : 'warn-text'}><i />{connector.status}</dd></div><div><dt>Records</dt><dd>{connector.records}</dd></div><div><dt>Last sync</dt><dd>{relativeSyncTime(connector.synced)}</dd></div></dl><button className="secondary-btn full-width">Manage connection <ChevronRight size={16}/></button></article>)}</section><section className="integration-callout"><span><ShieldCheck size={22}/></span><div><strong>Secrets stay server-side</strong><p>Provider credentials are encrypted at rest and never exposed to the browser.</p></div><button className="secondary-btn">Security settings</button></section></>
 }
 
 export default function App() {
+  const { snapshot, stale, syncing, error, refresh } = useSnapshot()
   const [view, setView] = useState<View>('overview')
   const [company, setCompany] = useState<CompanyId>('all')
   const [query, setQuery] = useState('')
@@ -104,10 +112,9 @@ export default function App() {
   const [companyOpen, setCompanyOpen] = useState(false)
   const [mobileNav, setMobileNav] = useState(false)
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null)
-  const [syncing, setSyncing] = useState(false)
 
-  const filteredDevices = useMemo(() => devices.filter((device) => (company === 'all' || device.company === company) && (!query || `${device.name} ${device.user} ${device.ip}`.toLowerCase().includes(query.toLowerCase()))), [company, query])
-  const runSync = () => { setSyncing(true); window.setTimeout(() => setSyncing(false), 1100) }
+  const filteredDevices = useMemo(() => snapshot.devices.filter((device) => (company === 'all' || device.company === company) && (!query || `${device.name} ${device.user} ${device.ip}`.toLowerCase().includes(query.toLowerCase()))), [company, query, snapshot.devices])
+  const runSync = () => void refresh(true)
   const navigate = (next: View) => { setView(next); setMobileNav(false) }
 
   const nav = [
@@ -124,13 +131,13 @@ export default function App() {
       <div className="sidebar-label">Workspace</div>
       <nav><button><Users size={18}/><span>People</span></button><button><ShieldCheck size={18}/><span>Compliance</span></button><button><Gauge size={18}/><span>Reports</span></button></nav>
       <div className="sidebar-spacer" />
-      <div className="sync-status"><div className="sync-heading"><span><i />All systems operational</span><button className={`icon-btn ${syncing ? 'spin' : ''}`} onClick={runSync} title="Sync now"><RefreshCw size={15}/></button></div><small>{syncing ? 'Synchronising providers...' : 'Last synced 24 seconds ago'}</small></div>
+      <div className={`sync-status ${stale ? 'is-stale' : ''}`}><div className="sync-heading"><span><i />{stale ? 'Using cached data' : 'All systems operational'}</span><button className={`icon-btn ${syncing ? 'spin' : ''}`} onClick={runSync} title="Sync now"><RefreshCw size={15}/></button></div><small>{syncing ? 'Synchronising providers...' : `Last synced ${relativeSyncTime(snapshot.generatedAt)}`}</small></div>
       <nav className="sidebar-bottom"><button><CircleHelp size={18}/><span>Help & support</span></button></nav>
     </aside>
     {mobileNav && <button className="nav-scrim" aria-label="Close navigation" onClick={() => setMobileNav(false)} />}
     <div className="main-column">
       <header className="topbar"><button className="mobile-menu icon-btn" onClick={() => setMobileNav(true)}><Menu size={20}/></button><div className="company-picker"><button onClick={() => setCompanyOpen(!companyOpen)}><span className="company-logo"><Building2 size={16}/></span><span><small>Workspace</small><strong>{companyNames[company]}</strong></span><ChevronDown size={15}/></button>{companyOpen && <div className="company-menu">{(Object.keys(companyNames) as CompanyId[]).map((id) => <button key={id} onClick={() => { setCompany(id); setCompanyOpen(false) }}><span><strong>{companyNames[id]}</strong><small>{id === 'all' ? '2 companies' : id === 'northstar' ? '824 devices' : '424 devices'}</small></span>{company === id && <Check size={16}/>}</button>)}</div>}</div><button className="global-search" onClick={() => setSearchOpen(true)}><Search size={17}/><span>Search devices, people or tickets</span><kbd><Command size={11}/> K</kbd></button><div className="top-actions"><button className="icon-btn notification" title="Notifications"><Bell size={19}/><i /></button><span className="top-divider"/><button className="profile"><span className="avatar">AS</span><span><strong>Alex Stone</strong><small>IT Administrator</small></span><ChevronDown size={14}/></button></div></header>
-      <main>{view === 'overview' && <Overview filteredDevices={filteredDevices} onSelect={setSelectedDevice}/>} {view === 'devices' && <DevicesView rows={filteredDevices} onSelect={setSelectedDevice}/>} {view === 'tickets' && <TicketsView/>} {view === 'integrations' && <IntegrationsView/>}</main>
+      <main>{error && <div className="data-notice"><AlertTriangle size={16}/><span><strong>Live sync unavailable.</strong> Showing the most recent local data.</span><button onClick={() => void refresh(true)}>Retry</button></div>}{view === 'overview' && <Overview filteredDevices={filteredDevices} onSelect={setSelectedDevice}/>} {view === 'devices' && <DevicesView rows={filteredDevices} onSelect={setSelectedDevice}/>} {view === 'tickets' && <TicketsView tickets={snapshot.tickets}/>} {view === 'integrations' && <IntegrationsView connectors={snapshot.connectors}/>}</main>
     </div>
     {searchOpen && <div className="modal-layer" onMouseDown={(e) => e.target === e.currentTarget && setSearchOpen(false)}><div className="command-modal"><div className="command-input"><Search size={19}/><input autoFocus placeholder="Search across your entire environment..." value={query} onChange={(e) => setQuery(e.target.value)}/><button onClick={() => setSearchOpen(false)}><kbd>ESC</kbd></button></div><div className="command-results"><span className="result-label">{query ? 'Matching devices' : 'Suggested'}</span>{filteredDevices.slice(0, 5).map((device) => <button key={device.id} onClick={() => { setSelectedDevice(device); setSearchOpen(false) }}><span className="device-icon"><Laptop size={16}/></span><span><strong>{device.name}</strong><small>{device.user} · {companyNames[device.company]}</small></span><span className="result-meta"><StatusDot status={device.status}/>{device.lastSeen}</span></button>)}{!filteredDevices.length && <EmptyState/>}</div><footer><span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span><span><kbd>↵</kbd> Open</span></footer></div></div>}
     {selectedDevice && <DeviceDrawer device={selectedDevice} onClose={() => setSelectedDevice(null)}/>} 

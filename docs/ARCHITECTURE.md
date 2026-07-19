@@ -4,14 +4,16 @@
 
 ```text
 React UI
-  -> unified Device / Ticket / Connector types
-  -> demo dataset
-  -> connector adapter contract
+  -> /api/v1/snapshot (poll + force refresh)
+      -> SnapshotStore (TTL + shared in-flight request + stale fallback)
+          -> demo connector adapters
+              -> unified Device / Ticket / Connector types
 ```
 
 The prototype is deliberately local and contains no secrets. The adapter
-contract in `src/services/connectors.ts` demonstrates parallel collection and
-record merging.
+contract in `src/services/connectors.ts` performs parallel collection and record
+merging. `server/connectors/demo.ts` supplies synthetic providers through the
+same boundary intended for live adapters.
 
 ## Target architecture
 

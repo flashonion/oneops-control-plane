@@ -8,7 +8,9 @@ each meaningful implementation slice.
 OneOps is a Vite + React + TypeScript prototype using synthetic data. It has four
 interactive views: Overview, Devices, Tickets, and Integrations. Company filters,
 global search, device filtering, a detail drawer, and responsive navigation work.
-The production build passes.
+An Express API now collects demo providers in parallel, caches snapshots, exposes
+health/connector endpoints, and falls back to stale data after a failed refresh.
+The production build, lint, and API tests pass.
 
 Important files:
 
@@ -17,6 +19,10 @@ Important files:
 - `src/types.ts`: canonical UI domain types
 - `src/data.ts`: fictional demo dataset
 - `src/services/connectors.ts`: provider adapter contract and merge example
+- `src/hooks/useSnapshot.ts`: polling, forced refresh, and stale-data client state
+- `server/app.ts`: local API routes and security headers
+- `server/snapshot-store.ts`: shared in-flight request and TTL cache
+- `server/connectors/demo.ts`: realistic zero-credential provider simulation
 - `docs/ARCHITECTURE.md`: target production design and identity rules
 - `docs/INTEGRATIONS.md`: official-provider research and constraints
 
@@ -32,7 +38,7 @@ Important files:
 ## Next implementation slices
 
 1. Split the large `App.tsx` into route and component modules.
-2. Add a backend workspace with OIDC, provider-secret storage, and `/api/v1`.
+2. Add OIDC, PostgreSQL persistence, and provider-secret storage to `/api/v1`.
 3. Implement Microsoft Graph adapter against a non-production tenant.
 4. Add PostgreSQL models for organisations, source records, unified records,
    connector runs, and audit events.
@@ -54,6 +60,7 @@ Important files:
 ```powershell
 npm.cmd install
 npm.cmd run build
+npm.cmd test
 npm.cmd run dev
 ```
 

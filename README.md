@@ -4,8 +4,8 @@ OneOps is a local-first IT operations control plane that reconciles devices,
 people, tickets, compliance, and remote-support presence across multiple
 companies and providers.
 
-The current release is a polished, interactive demo. It uses synthetic data and
-does not connect to production accounts.
+The current release is a polished, interactive full-stack demo. It uses
+synthetic data and does not connect to production accounts.
 
 ## Run locally
 
@@ -22,6 +22,9 @@ Open the URL printed by Vite. Create a production build with:
 npm.cmd run build
 ```
 
+`npm.cmd run dev` starts both the OneOps API on port 4174 and the web app on
+port 4173. Run `npm.cmd test` for the API test suite.
+
 ## What works
 
 - Multi-company workspace switching
@@ -32,6 +35,8 @@ npm.cmd run build
 - Integration health and coverage view
 - Responsive desktop and mobile layouts
 - Provider-neutral connector contract in `src/services/connectors.ts`
+- Local Express API with parallel connector collection and snapshot caching
+- Explicit stale-data fallback and background refresh handling
 
 ## Data and security
 
