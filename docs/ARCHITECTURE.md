@@ -15,6 +15,17 @@ contract in `src/services/connectors.ts` performs parallel collection and record
 merging. `server/connectors/demo.ts` supplies synthetic providers through the
 same boundary intended for live adapters.
 
+Every adapter is wrapped by `ConnectorTelemetry`. Health, device, and ticket
+operations produce bounded in-memory run records containing source, operation,
+duration, record count, result, and a sanitised error. The browser receives these
+through the snapshot and `/api/v1/connector-runs`; secrets and request headers are
+never included.
+
+Ambiguous identities are not merged automatically. The review queue presents
+both source records, confidence, and matching evidence so an operator can merge
+or keep them separate. Production decisions will become audited API commands;
+the current local demo keeps decisions in React state only.
+
 ## Target architecture
 
 ```text

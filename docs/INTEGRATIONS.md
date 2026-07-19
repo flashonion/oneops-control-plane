@@ -39,6 +39,12 @@ agents, alerts, customers, devices, contacts, and tickets. Create a dedicated
 token with custom read-only permissions, an expiry date, and an IP allowlist if
 deployment networking is stable. Batch requests and throttle background exports.
 
+`server/connectors/atera.ts` implements a read-only adapter for agents and
+tickets. It supports pagination, flexible response envelopes, customer-to-company
+resolution, open-ticket filtering, canonical mappings, shared concurrent calls,
+and sanitised provider errors. It remains inactive until a dedicated test token
+and customer mapping are supplied.
+
 References:
 
 - https://support.atera.com/hc/en-us/articles/219083397-Using-the-Atera-API

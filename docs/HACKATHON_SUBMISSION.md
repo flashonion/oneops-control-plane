@@ -52,8 +52,11 @@ when an action requires them.
   most severe health/compliance signal
 - Lazy-loaded analytics chart, reducing the main JavaScript bundle by about 60%
 - Least-privilege, backend-only credential design with structured error responses
-- Six automated tests covering API contracts, caching, failure fallback, and
-  reconciliation
+- Thirteen automated tests covering API contracts, caching, failure fallback,
+  provider mapping, telemetry sanitisation, and reconciliation
+- Operator review queue for ambiguous device matches instead of unsafe automatic
+  merging
+- Live connector operation diagnostics with sanitised error reporting
 
 ## What is real today
 

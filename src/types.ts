@@ -37,3 +37,14 @@ export interface Connector {
   records: string
   color: string
 }
+
+export interface ConnectorRun {
+  id: string
+  connectorId: SourceId
+  operation: 'health' | 'devices' | 'tickets'
+  status: 'success' | 'failed'
+  startedAt: string
+  durationMs: number
+  recordCount?: number
+  error?: string
+}

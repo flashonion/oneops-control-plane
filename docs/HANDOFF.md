@@ -14,8 +14,12 @@ The ticket queue opens an enriched context drawer with its linked device. Search
 covers devices and tickets, and keyboard open/close shortcuts work. The analytics
 chart is lazy-loaded.
 `MicrosoftGraphConnector` implements read-only Intune device pagination and
-mapping behind an injected token provider. It is not active in demo mode. The
-production build, lint, and eight automated tests pass.
+mapping behind an injected token provider. It is not active in demo mode.
+`AteraConnector` now implements read-only paginated agents and tickets behind an
+injected API key and company resolver. Connector operations emit sanitised run
+telemetry shown on Integrations. A functional identity review queue handles
+ambiguous cross-provider matches. The production build, lint, and thirteen tests
+pass after this milestone.
 
 Important files:
 
@@ -31,6 +35,10 @@ Important files:
 - `server/connectors/demo.ts`: realistic zero-credential provider simulation
 - `server/connectors/microsoft-graph.ts`: tested Intune/Graph adapter awaiting a
   non-production token provider
+- `server/connectors/atera.ts`: tested Atera adapter awaiting a restricted token
+  and customer-to-company mapping
+- `server/connector-telemetry.ts`: bounded operation diagnostics and sanitisation
+- `src/reconciliation.ts`: demo identity candidates and review types
 - `docs/ARCHITECTURE.md`: target production design and identity rules
 - `docs/INTEGRATIONS.md`: official-provider research and constraints
 - `docs/HACKATHON_SUBMISSION.md`: pitch, demo script, and technical highlights
@@ -52,8 +60,9 @@ Important files:
 4. Add PostgreSQL models for organisations, source records, unified records,
    connector runs, and audit events.
 5. Add Vitest component tests and Playwright workflow tests.
-6. Add Atera adapter, followed by Snip-IP and ScreenConnect discovery spikes.
-7. Build an identity reconciliation review queue.
+6. Validate the Atera adapter against its account-specific Swagger schema, then
+   follow with Snip-IP and ScreenConnect discovery spikes.
+7. Persist identity reconciliation decisions as audited API commands.
 
 ## Known limitations
 

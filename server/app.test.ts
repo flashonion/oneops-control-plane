@@ -33,4 +33,13 @@ describe('OneOps API', () => {
     const response = await request(createApp(config)).get('/missing').expect(404)
     expect(response.body.error.code).toBe('not_found')
   })
+
+  it('exposes sanitised connector run diagnostics', async () => {
+    const app = createApp(config)
+    await request(app).get('/api/v1/snapshot').expect(200)
+    const response = await request(app).get('/api/v1/connector-runs').expect(200)
+    expect(response.body.data).toHaveLength(12)
+    expect(response.body.data[0]).toMatchObject({ status: 'success' })
+    expect(response.body.data[0]).not.toHaveProperty('credentials')
+  })
 })

@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { connectors, devices, tickets } from '../data'
 import type { UnifiedSnapshot } from '../services/connectors'
+import type { ConnectorRun } from '../types'
 
 interface SnapshotEnvelope {
   data: UnifiedSnapshot
   cached: boolean
   stale: boolean
   ageMs: number
+  runs?: ConnectorRun[]
 }
 
 const initialSnapshot: UnifiedSnapshot = {
@@ -21,6 +23,7 @@ export function useSnapshot() {
   const [stale, setStale] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [runs, setRuns] = useState<ConnectorRun[]>([])
   const mounted = useRef(true)
 
   const refresh = useCallback(async (force = false) => {
@@ -33,6 +36,7 @@ export function useSnapshot() {
       const envelope = await response.json() as SnapshotEnvelope
       if (!mounted.current) return
       setSnapshot(envelope.data)
+      setRuns(envelope.runs || [])
       setStale(envelope.stale)
       setError(null)
     } catch (requestError) {
@@ -55,5 +59,5 @@ export function useSnapshot() {
     }
   }, [refresh])
 
-  return { snapshot, stale, syncing, error, refresh }
+  return { snapshot, runs, stale, syncing, error, refresh }
 }
