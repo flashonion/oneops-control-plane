@@ -10,11 +10,14 @@ interactive views: Overview, Devices, Tickets, and Integrations. Company filters
 global search, device filtering, a detail drawer, and responsive navigation work.
 An Express API now collects demo providers in parallel, caches snapshots, exposes
 health/connector endpoints, and falls back to stale data after a failed refresh.
-The production build, lint, and API tests pass.
+The ticket queue opens an enriched context drawer with its linked device. Search
+covers devices and tickets, and keyboard open/close shortcuts work. The analytics
+chart is lazy-loaded. The production build, lint, and six automated tests pass.
 
 Important files:
 
 - `src/App.tsx`: views and interactions
+- `src/components/HealthChart.tsx`: lazy-loaded Recharts analytics module
 - `src/styles.css`: complete responsive visual system
 - `src/types.ts`: canonical UI domain types
 - `src/data.ts`: fictional demo dataset
@@ -25,6 +28,7 @@ Important files:
 - `server/connectors/demo.ts`: realistic zero-credential provider simulation
 - `docs/ARCHITECTURE.md`: target production design and identity rules
 - `docs/INTEGRATIONS.md`: official-provider research and constraints
+- `docs/HACKATHON_SUBMISSION.md`: pitch, demo script, and technical highlights
 
 ## Decisions
 
@@ -49,7 +53,8 @@ Important files:
 ## Known limitations
 
 - All metrics and timestamps are static demo values.
-- Header search filters device data only.
+- Search opens ticket results at the ticket queue; selecting the exact ticket
+  from search is not yet implemented.
 - Remote session and mutation buttons are visual placeholders.
 - The chart dependency contributes most of the initial JavaScript bundle; route
   splitting should be added when the app is modularised.

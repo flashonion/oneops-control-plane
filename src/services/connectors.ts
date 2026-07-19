@@ -14,6 +14,19 @@ export interface UnifiedSnapshot {
   tickets: Ticket[]
 }
 
+const statusRank = { healthy: 0, warning: 1, offline: 2, critical: 3 }
+const complianceRank = { Compliant: 0, 'At risk': 1, Noncompliant: 2 }
+
+export function mergeDevice(current: Device, incoming: Device): Device {
+  return {
+    ...current,
+    status: statusRank[incoming.status] > statusRank[current.status] ? incoming.status : current.status,
+    compliance: complianceRank[incoming.compliance] > complianceRank[current.compliance] ? incoming.compliance : current.compliance,
+    risk: Math.max(current.risk, incoming.risk),
+    sources: [...new Set([...current.sources, ...incoming.sources])],
+  }
+}
+
 // Production adapters implement this boundary server-side. Browser code never
 // receives provider secrets or upstream session cookies.
 export async function collectSnapshot(adapters: ConnectorAdapter[]): Promise<UnifiedSnapshot> {
@@ -26,7 +39,7 @@ export async function collectSnapshot(adapters: ConnectorAdapter[]): Promise<Uni
   const byId = new Map<string, Device>()
   for (const device of deviceGroups.flat()) {
     const current = byId.get(device.id)
-    byId.set(device.id, current ? { ...current, ...device, sources: [...new Set([...current.sources, ...device.sources])] } : device)
+    byId.set(device.id, current ? mergeDevice(current, device) : device)
   }
 
   return {
