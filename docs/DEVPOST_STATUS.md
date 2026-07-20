@@ -1,6 +1,6 @@
 # Devpost Submission Status
 
-Last updated: 2026-07-20
+Last updated: 2026-07-21
 
 ## Project
 
@@ -10,6 +10,10 @@ Last updated: 2026-07-20
 - Project ID: `1339190`
 - Repository: https://github.com/flashonion/oneops-control-plane
 - Primary Codex session: `019f7b74-4594-76c2-afca-8de9c3e2e8c2`
+- Public demo video: https://youtu.be/AYw-hFDlFoU
+- Submission ID: `1091032`
+- Submission status: **Submitted**
+- Submitted at: `2026-07-20T11:47:26.789-04:00`
 
 ## Completed
 
@@ -20,17 +24,17 @@ Last updated: 2026-07-20
 - README explanation of how Codex and GPT-5.6 were used
 - 98-second Build Week video with product demo and compliant voice-over
 
-## Submission answers prepared
+## Submitted answers
 
-- Submitter type: Individual (confirm before final submission)
-- Country of residence: Australia (confirm before final submission)
+- Submitter type: Individual
+- Country of residence: Australia
 - Category: Work & Productivity
 - Repository URL: https://github.com/flashonion/oneops-control-plane
 - Judge instructions: run locally with synthetic sample data using the README
 - `/feedback` session ID: `019f7b74-4594-76c2-afca-8de9c3e2e8c2`
 
-## Remaining blocker
+## Completion
 
-The hackathon requires a public YouTube video. Upload
-`artifacts/oneops-openai-build-week-demo-narrated.mp4` after signing in to
-YouTube, then set that URL on the project and submit the prepared answers.
+The project was submitted successfully to OpenAI Build Week. The YouTube video
+is public, the repository is public and licensed under MIT, and the Devpost
+submission is linked to the primary Codex session.
