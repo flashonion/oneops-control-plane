@@ -4,6 +4,8 @@
 
 **OneOps: One operational view for every IT system**
 
+Release: **1.0.0**
+
 ## Short description
 
 OneOps turns fragmented IT tooling into a unified multi-company control plane.
@@ -64,6 +66,11 @@ The full UI, local API, connector orchestration, caching, reconciliation,
 polling, manual refresh, company scoping, and workflows run locally. Provider
 responses are synthetic because production company accounts are intentionally
 not connected during the Hackathon build.
+
+Two task-based user-testing rounds cover a first-time judge on desktop and an
+on-call IT administrator at a 390x844 mobile viewport. The first round produced
+a direct device-to-ticket navigation improvement; the second round completed
+without release-blocking findings. See `docs/USER_TESTING.md` for evidence.
 
 ## Next milestone
 

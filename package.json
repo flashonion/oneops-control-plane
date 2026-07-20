@@ -1,12 +1,13 @@
 {
   "name": "oneops-control-plane",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n api,web -c green,blue \"npm:dev:api\" \"npm:dev:web\"",
     "dev:api": "tsx watch server/index.ts",
     "dev:web": "vite --host 0.0.0.0",
+    "start": "tsx server/index.ts",
     "start:api": "tsx server/index.ts",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",

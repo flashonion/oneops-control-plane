@@ -5,6 +5,9 @@ each meaningful implementation slice.
 
 ## Current state (2026-07-20)
 
+Release `1.0.0` is the Hackathon submission candidate. Two user-testing rounds
+are documented in `docs/USER_TESTING.md`; the release checklist is complete.
+
 OneOps is a Vite + React + TypeScript prototype using synthetic data. It has four
 interactive views: Overview, Devices, Tickets, and Integrations. Company filters,
 global search, device filtering, a detail drawer, and responsive navigation work.

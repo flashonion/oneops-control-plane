@@ -1,11 +1,22 @@
-# OneOps
+# OneOps 1.0
 
 OneOps is a local-first IT operations control plane that reconciles devices,
 people, tickets, compliance, and remote-support presence across multiple
 companies and providers.
 
-The current release is a polished, interactive full-stack demo. It uses
+The Hackathon release is a polished, interactive full-stack demo. It uses
 synthetic data and does not connect to production accounts.
+
+## Judge quick start
+
+```powershell
+npm.cmd install
+npm.cmd run dev
+```
+
+Open `http://localhost:4173`, then select **Quick action** and
+**Investigate highest risk**. The device record links directly to its urgent
+service desk ticket, demonstrating the complete cross-platform incident journey.
 
 ## Run locally
 
@@ -24,6 +35,15 @@ npm.cmd run build
 
 `npm.cmd run dev` starts both the OneOps API on port 4174 and the web app on
 port 4173. Run `npm.cmd test` for the API test suite.
+
+To run the production build in Docker:
+
+```powershell
+docker build -t oneops:1.0.0 .
+docker run --rm -p 4174:4174 oneops:1.0.0
+```
+
+Open `http://localhost:4174` for the production-served application.
 
 ## What works
 
@@ -55,7 +75,10 @@ use least-privilege permissions, and produce an audit event for every action.
 - [Integration implementation notes](docs/INTEGRATIONS.md)
 - [Developer handoff log](docs/HANDOFF.md)
 - [Hackathon submission draft](docs/HACKATHON_SUBMISSION.md)
+- [User testing report](docs/USER_TESTING.md)
+- [Release checklist](docs/RELEASE_CHECKLIST.md)
 - [Security policy](SECURITY.md)
+- [Changelog](CHANGELOG.md)
 
 ## Repository status
 

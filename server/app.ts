@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import path from 'node:path'
 import express, { type NextFunction, type Request, type Response } from 'express'
 import type { AppConfig } from './config'
 import { createDemoConnectors } from './connectors/demo'
@@ -48,6 +49,12 @@ export function createApp(config: AppConfig) {
   app.get('/api/v1/connector-runs', (_request, response) => {
     response.json({ data: telemetry.list() })
   })
+
+  if (config.NODE_ENV === 'production') {
+    const dist = path.resolve(process.cwd(), 'dist')
+    app.use(express.static(dist, { index: false, maxAge: '1h' }))
+    app.get(/^(?!\/api\/|\/health$).*/, (_request, response) => response.sendFile(path.join(dist, 'index.html')))
+  }
 
   app.use((_request, response) => response.status(404).json({ error: { code: 'not_found', message: 'Route not found' } }))
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
