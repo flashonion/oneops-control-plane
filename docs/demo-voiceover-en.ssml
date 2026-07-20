@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-GB">
+  <voice name="Microsoft Hazel Desktop">
+    <prosody rate="-4%">
+      OneOps gives IT teams one operational view across every system.
+      <break time="550ms"/>
+      The Live Workplace starts with the physical office. At a glance, an operator can see who is at each desk, which computer they are using, how long they have been online, and whether the device needs attention.
+      <break time="450ms"/>
+      Selecting Mia at desk A zero four opens one reconciled device record. Intune compliance, Atera agent data, ScreenConnect presence, and internal network inventory remain traceable to their source.
+      <break time="450ms"/>
+      Her urgent BitLocker request is already linked to the affected computer, giving the service desk the context it needs without four separate logins.
+      <break time="450ms"/>
+      OneOps is designed for parent companies and subsidiaries. Switching scope changes the office, people, devices, and tickets together.
+      <break time="450ms"/>
+      Connector health stays visible, while credentials stay on the server. When provider records cannot be matched safely, a human reviews the evidence before they are merged.
+      <break time="450ms"/>
+      The same context remains available on mobile, with read-only boundaries around sensitive actions until authentication and auditing are configured.
+      <break time="500ms"/>
+      OneOps. See the office as it is. Run I T as one system.
+    </prosody>
+  </voice>
+</speak>

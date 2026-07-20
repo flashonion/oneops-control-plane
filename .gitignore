@@ -7,3 +7,9 @@ dist
 vite.config.js
 vite.config.d.ts
 .DS_Store
+__pycache__/
+.video-tools/
+demo-captures/
+artifacts/*.mp4
+artifacts/*.wav
+artifacts/preview-*.png
