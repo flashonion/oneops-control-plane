@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.1 - 2026-07-20
+
+### Fixed
+
+- Added stable accessible names to the compact mobile navigation, company,
+  search, and profile controls
+- Verified public, anonymous access to both published GitHub releases
+
+### Verified
+
+- Added two end-to-end user-testing rounds for the judge and mobile operator
+  journeys
+
 ## 1.1.0 - 2026-07-20
 
 ### Added

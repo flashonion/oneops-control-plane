@@ -1,6 +1,6 @@
 # Release Checklist
 
-## OneOps 1.1.0
+## OneOps 1.1.1
 
 - [x] Demo data is clearly identified
 - [x] No production credentials or browser sessions are used
@@ -12,7 +12,8 @@
 - [x] Provider refresh and stale states are visible
 - [x] Write actions explain the read-only boundary
 - [x] Desktop and 390x844 mobile layouts are verified
-- [x] Four user-testing rounds are documented
+- [x] Six user-testing rounds are documented
+- [x] Public GitHub Release links return HTTP 200 anonymously
 - [x] Lint passes
 - [x] Seventeen automated tests pass
 - [x] Production build passes

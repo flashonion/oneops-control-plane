@@ -1,7 +1,7 @@
 # User Testing Report
 
 Date: 2026-07-20  
-Release candidate: OneOps 1.1.0
+Release candidate: OneOps 1.1.1
 Environment: local demo API with synthetic company data
 
 ## Method
@@ -117,6 +117,69 @@ Results:
 - Site selection, presence controls, desk buttons, and the device drawer remained
   available without desktop-only interactions.
 - No release-blocking mobile layout issue was found.
+
+## Round 5: Public Hackathon judge
+
+Persona: a judge opening the public project without repository credentials.
+Viewport: 1280px desktop.
+Goal: verify public access and complete the spatial incident story from a fresh
+session.
+
+Tasks:
+
+1. Open the public GitHub release without authentication.
+2. Recognise the demo workspace and Live Workplace as the first product screen.
+3. Select Mia Chen at A-04 and inspect her unified device evidence.
+4. Follow the related `INC-2841` BitLocker ticket and linked device.
+
+Results:
+
+- Both `v1.0.0` and `v1.1.0` release URLs returned anonymous HTTP 200 after the
+  repository was changed from private to public.
+- The product workflow completed in approximately 1.5 seconds of automated
+  interaction after page readiness.
+- Desk, workstation, presence, Intune, ScreenConnect, ticket, and linked-device
+  context were all available.
+- The 1280px document had no horizontal overflow.
+
+No product finding was recorded in round five. One initial test assertion used
+the integration-card label `Microsoft Intune` while the device source badge is
+correctly labelled `Intune`; the assertion was corrected without a product
+change.
+
+## Round 6: Mobile subsidiary operator
+
+Persona: a service desk operator locating an offline subsidiary device by phone.
+Viewport: true 390x844 mobile viewport.
+Goal: switch company scope, isolate an offline desk, inspect the device, and
+understand the remote-action boundary.
+
+Tasks:
+
+1. Use the compact company control to switch from All companies to Harbour Labs.
+2. Apply the Offline presence filter.
+3. Select Leo Taylor at S-12 and verify device and presence context.
+4. Attempt Start remote session and confirm safe feedback.
+
+Finding: the compact mobile company, navigation, and search controls lost their
+accessible names when their visible text was hidden at the mobile breakpoint.
+The controls remained clickable, but screen readers and role-based automation
+could not identify them reliably.
+
+Change made: added stable accessible names to the mobile navigation, company,
+search, and user-menu controls, then rebuilt the production application and
+restarted the round from a fresh page.
+
+Results after the fix:
+
+- Every compact top-bar control had a unique accessible name.
+- Harbour scope excluded Northstar staff and selected Harbour Studio.
+- Offline filtering left exactly `S-12, Leo Taylor, HBR-SP-224, Offline` on the
+  floor plan.
+- The device drawer showed S-12, Level 2, Signed out, and the expected computer.
+- The remote action explained that a configured ScreenConnect account is needed.
+- Browser inner width was 390px, client and document widths were 375px, and the
+  drawer width was 375px with no document-level horizontal overflow.
 
 ## Residual risks
 

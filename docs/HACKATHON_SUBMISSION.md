@@ -4,7 +4,7 @@
 
 **OneOps: One operational view for every IT system**
 
-Release: **1.1.0**
+Release: **1.1.1**
 
 ## Short description
 
@@ -70,8 +70,8 @@ responses are synthetic because production company accounts are intentionally
 not connected during the Hackathon build. Live provider composition and
 credential acquisition are implemented server-side for non-production testing.
 
-Four task-based user-testing rounds cover a first-time judge, an on-call IT
-administrator, a workplace operations lead, and a mobile service desk operator.
+Six task-based user-testing rounds cover first-time judges, on-call IT
+administrators, a workplace operations lead, and mobile service desk operators.
 They include desktop and true 390x844 mobile verification. See
 `docs/USER_TESTING.md` for evidence and fixes.
 

@@ -5,7 +5,7 @@ each meaningful implementation slice.
 
 ## Current state (2026-07-20)
 
-Release `1.1.0` is the current Hackathon submission candidate. Four user-testing
+Release `1.1.1` is the current Hackathon submission candidate. Six user-testing
 rounds are documented in `docs/USER_TESTING.md`.
 
 OneOps is a Vite + React + TypeScript prototype using synthetic data. Live

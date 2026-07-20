@@ -40,8 +40,8 @@ port 4173. Run `npm.cmd test` for the API test suite.
 To run the production build in Docker:
 
 ```powershell
-docker build -t oneops:1.1.0 .
-docker run --rm -p 4174:4174 oneops:1.1.0
+docker build -t oneops:1.1.1 .
+docker run --rm -p 4174:4174 oneops:1.1.1
 ```
 
 Open `http://localhost:4174` for the production-served application.
