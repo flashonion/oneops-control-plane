@@ -7,6 +7,25 @@ companies and providers.
 The Hackathon release is a polished, interactive full-stack demo. It uses
 synthetic data and does not connect to production accounts.
 
+## Built with Codex and GPT-5.6
+
+OneOps was built in Codex with GPT-5.6 as an implementation and testing partner.
+Codex first mapped the product problem from real IT operations: fragmented
+ScreenConnect, Microsoft, Atera, and internal inventory workflows across multiple
+companies. It then helped implement the React/TypeScript interface, Express
+connector orchestration, deterministic identity reconciliation, cache and
+stale-data behaviour, and responsive workplace map.
+
+The highest-value GPT-5.6 work was reasoning across constraints that could not be
+solved in one component: provider-owned identity, source provenance, honest stale
+states, least-privilege action boundaries, and mobile operator context. Codex also
+ran six task-based UX rounds, inspected desktop and 390x844 mobile captures, and
+turned each finding into focused code and test changes. Product decisions stayed
+human-led; each change was reviewed in the running application and verified with
+automated tests, linting, production builds, and release checks.
+
+Primary Codex `/feedback` session: `019f7b74-4594-76c2-afca-8de9c3e2e8c2`.
+
 ## Judge quick start
 
 ```powershell
@@ -82,6 +101,7 @@ use least-privilege permissions, and produce an audit event for every action.
 - [Hackathon submission draft](docs/HACKATHON_SUBMISSION.md)
 - [User testing report](docs/USER_TESTING.md)
 - [Release checklist](docs/RELEASE_CHECKLIST.md)
+- [Build Week submission narrative](docs/HACKATHON_SUBMISSION.md)
 - [Security policy](SECURITY.md)
 - [Changelog](CHANGELOG.md)
 

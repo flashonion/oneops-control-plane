@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-GB">
+  <voice name="Microsoft Hazel Desktop">
+    <prosody rate="-4%">
+      OneOps gives IT teams one operational view across every system.
+      <break time="450ms"/>
+      The Live Workplace starts with the physical office. At a glance, an operator can see who is at each desk, which computer they are using, how long they have been online, and whether the device needs attention.
+      <break time="350ms"/>
+      Selecting Mia at desk A zero four opens one reconciled device record. Intune compliance, Atera agent data, ScreenConnect presence, and internal network inventory remain traceable to their source.
+      <break time="350ms"/>
+      Her urgent BitLocker request is already linked to the affected computer, giving the service desk full context without four separate logins.
+      <break time="350ms"/>
+      OneOps supports parent companies and subsidiaries. Switching scope changes the office, people, devices, and tickets together.
+      <break time="350ms"/>
+      Connector health stays visible, while credentials stay on the server. Records that cannot be matched safely enter a human review queue instead of being merged blindly.
+      <break time="350ms"/>
+      The same context remains available on mobile, with read-only boundaries around sensitive actions until authentication and auditing are configured.
+      <break time="500ms"/>
+      For OpenAI Build Week, I used Codex with GPT five point six as the implementation partner across the project. Codex inspected the evolving codebase, built the React and TypeScript interface and Express connector layer, wrote reconciliation and cache tests, and helped run six rounds of task-based user testing. GPT five point six helped reason across provider identity, stale data, security boundaries, and mobile workflows, then turn the test evidence into focused product improvements. I kept the key product decisions human-led and reviewed every change through the working application, automated tests, and production builds.
+      <break time="450ms"/>
+      OneOps. See the office as it is. Run I T as one system.
+    </prosody>
+  </voice>
+</speak>

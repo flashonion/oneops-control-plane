@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import math
 import subprocess
 import sys
@@ -39,6 +40,21 @@ SCENES = [
     Scene("07-mobile.png", 9.0, "The same context, anywhere", "Responsive operations for an on-call team, with safe action boundaries.", mode="mobile"),
     Scene("01-workplace.png", 5.0, "ONEOPS", "See the office as it is. Run IT as one system.", mode="outro"),
 ]
+
+BUILD_WEEK_SCENES = [
+    Scene("01-workplace.png", 6.0, "ONEOPS", "One operational view for every IT system", mode="title"),
+    Scene("01-workplace.png", 11.0, "Your workplace, live", "See the person, workstation, presence, and risk at every desk.", 0.60, 0.48),
+    Scene("02-device.png", 11.0, "One device record", "Intune, Atera, ScreenConnect, and Snip-IP evidence reconciled in context.", 0.73, 0.46),
+    Scene("03-ticket.png", 10.0, "From desk to incident", "The urgent BitLocker ticket is already linked to Mia and SYD-LT-042.", 0.75, 0.48),
+    Scene("04-harbour.png", 9.0, "Built for multi-company IT", "Switch company scope and the office, people, and devices change together.", 0.58, 0.48),
+    Scene("05-integrations.png", 10.0, "A secure data fabric", "Provider credentials stay server-side while sync health stays visible.", 0.58, 0.46),
+    Scene("06-review.png", 9.0, "Human review where identity is uncertain", "OneOps explains match confidence before records are merged.", 0.58, 0.48),
+    Scene("07-mobile.png", 10.0, "The same context, anywhere", "Responsive operations for an on-call team, with safe action boundaries.", mode="mobile"),
+    Scene("01-workplace.png", 16.0, "CODEX + GPT-5.6", "Built through implementation, testing, and product decisions with Codex.", mode="title"),
+    Scene("01-workplace.png", 6.0, "ONEOPS", "See the office as it is. Run IT as one system.", mode="outro"),
+]
+
+RUN_LABEL = "HACKATHON DEMO · 01:13"
 
 
 def font(name: str, size: int) -> ImageFont.FreeTypeFont:
@@ -107,7 +123,9 @@ def title_frame(image: Image.Image, scene: Scene, progress: float, outro: bool =
     subtitle_width = subtitle_box[2] - subtitle_box[0]
     draw.text(((WIDTH - subtitle_width) / 2, center_y + 90), scene.subtitle, font=FONT_SUBTITLE, fill=(195, 205, 213, alpha))
     if not outro:
-        draw.text((WIDTH / 2 - 98, center_y + 145), "HACKATHON DEMO · 01:13", font=FONT_SMALL, fill=(80, 210, 160, alpha))
+        label_box = draw.textbbox((0, 0), RUN_LABEL, font=FONT_SMALL)
+        label_width = label_box[2] - label_box[0]
+        draw.text(((WIDTH - label_width) / 2, center_y + 145), RUN_LABEL, font=FONT_SMALL, fill=(80, 210, 160, alpha))
     return Image.alpha_composite(canvas, overlay).convert("RGB")
 
 
@@ -154,16 +172,26 @@ def render_scene(scene: Scene, progress: float) -> Image.Image:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Render the OneOps demo video")
+    parser.add_argument("--build-week", action="store_true", help="Render the OpenAI Build Week submission cut")
+    args = parser.parse_args()
+
+    global RUN_LABEL
+    scenes = BUILD_WEEK_SCENES if args.build_week else SCENES
+    output = ROOT / "artifacts" / "oneops-openai-build-week-demo.mp4" if args.build_week else OUTPUT
+    if args.build_week:
+        RUN_LABEL = "OPENAI BUILD WEEK · 01:38"
+
     sys.path.insert(0, str(ROOT / ".video-tools"))
     import imageio_ffmpeg
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    output.parent.mkdir(parents=True, exist_ok=True)
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     command = [
         ffmpeg, "-y", "-f", "rawvideo", "-vcodec", "rawvideo", "-pix_fmt", "rgb24",
         "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS), "-i", "-", "-an",
         "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
-        "-movflags", "+faststart", str(OUTPUT),
+        "-movflags", "+faststart", str(output),
     ]
     process = subprocess.Popen(command, stdin=subprocess.PIPE)
     if process.stdin is None:
@@ -172,7 +200,7 @@ def main() -> None:
     previous: Image.Image | None = None
     transition_frames = round(0.45 * FPS)
     try:
-        for scene_index, scene in enumerate(SCENES):
+        for scene_index, scene in enumerate(scenes):
             total_frames = round(scene.duration * FPS)
             first = render_scene(scene, 0)
             for frame_index in range(total_frames):
@@ -189,7 +217,7 @@ def main() -> None:
     result = process.wait()
     if result != 0:
         raise SystemExit(result)
-    print(OUTPUT)
+    print(output)
 
 
 if __name__ == "__main__":

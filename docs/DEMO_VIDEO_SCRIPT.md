@@ -75,3 +75,18 @@ Outputs:
 
 - `artifacts/oneops-hackathon-demo-v1.1.1.mp4`
 - `artifacts/oneops-hackathon-demo-v1.1.1-narrated.mp4`
+
+## OpenAI Build Week cut
+
+The submission-specific cut is 98 seconds and adds an explicit narrated account
+of how Codex and GPT-5.6 were used. Render it with:
+
+```powershell
+$env:PYTHONPATH='.video-tools'
+python scripts/render_demo_video.py --build-week
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+& .\scripts\render_build_week_narration.ps1
+```
+
+The final upload file is
+`artifacts/oneops-openai-build-week-demo-narrated.mp4`.
