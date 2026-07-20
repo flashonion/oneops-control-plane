@@ -2,14 +2,15 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import {
   Activity, AlertTriangle, Bell, Building2, Check, CheckCircle2, ChevronDown,
   ChevronRight, CircleHelp, Clock3, Command, ExternalLink, Gauge,
-  FileSearch, GitMerge, LayoutDashboard, Laptop, Link2, Menu, MonitorUp, MoreHorizontal, PlayCircle, PlugZap, RefreshCw,
+  FileSearch, GitMerge, LayoutDashboard, Laptop, Link2, Map, Menu, MonitorUp, MoreHorizontal, PlayCircle, PlugZap, RefreshCw,
   Search, ShieldCheck, SlidersHorizontal, TicketCheck, Users, Wifi, X, Zap,
 } from 'lucide-react'
 import { useSnapshot } from './hooks/useSnapshot'
+import { WorkplaceMap } from './components/WorkplaceMap'
 import { reconciliationCandidates, type ReconciliationCandidate } from './reconciliation'
 import type { CompanyId, Connector, ConnectorRun, Device, DeviceStatus, SourceId, Ticket } from './types'
 
-type View = 'overview' | 'devices' | 'tickets' | 'integrations' | 'reconciliation'
+type View = 'workplace' | 'overview' | 'devices' | 'tickets' | 'integrations' | 'reconciliation'
 
 const HealthChart = lazy(() => import('./components/HealthChart'))
 
@@ -55,7 +56,7 @@ function DeviceDrawer({ device, relatedTicket, onClose, onOpenTicket, onDemoActi
     <aside className="drawer">
       <header className="drawer-header"><div><span className="eyebrow">Unified device record</span><h2>{device.name}</h2></div><button className="icon-btn" onClick={onClose} title="Close"><X size={19} /></button></header>
       <div className="drawer-status"><span className={`device-hero-icon ${device.status}`}><Laptop size={25} /></span><div><strong>{device.model}</strong><span>{device.os}</span></div><span className={`risk-score risk-${device.status}`}>{device.risk} risk</span></div>
-      <section className="drawer-section"><h3>Overview</h3><dl className="details-grid"><div><dt>Assigned user</dt><dd>{device.user}</dd></div><div><dt>Company</dt><dd>{companyNames[device.company]}</dd></div><div><dt>IP address</dt><dd>{device.ip}</dd></div><div><dt>Last seen</dt><dd>{device.lastSeen}</dd></div><div><dt>Compliance</dt><dd>{device.compliance}</dd></div><div><dt>Asset ID</dt><dd>{device.id.toUpperCase()}</dd></div></dl></section>
+      <section className="drawer-section"><h3>Overview</h3><dl className="details-grid"><div><dt>Assigned user</dt><dd>{device.user}</dd></div><div><dt>Company</dt><dd>{companyNames[device.company]}</dd></div>{device.workplace && <div><dt>Workstation</dt><dd>{device.workplace.deskId} · {device.workplace.floor}</dd></div>}{device.presence && <div><dt>Live presence</dt><dd className="drawer-presence"><span className={`presence-dot ${device.presence.state}`}/>{device.presence.activity} · {device.presence.since}</dd></div>}<div><dt>IP address</dt><dd>{device.ip}</dd></div><div><dt>Last seen</dt><dd>{device.lastSeen}</dd></div><div><dt>Compliance</dt><dd>{device.compliance}</dd></div><div><dt>Asset ID</dt><dd>{device.id.toUpperCase()}</dd></div></dl></section>
       <section className="drawer-section"><h3>Source coverage</h3><div className="coverage-list">{device.sources.map((source) => <div key={source}><SourceBadge source={source} /><span><strong>{sourceNames[source]}</strong><small>Record matched and synced</small></span><CheckCircle2 size={18} /></div>)}</div></section>
       {relatedTicket && <section className="drawer-section"><h3>Related service desk ticket</h3><button className="related-ticket" onClick={() => onOpenTicket(relatedTicket)}><span className={`attention-icon ${relatedTicket.priority === 'Urgent' ? 'critical' : 'warning'}`}><TicketCheck size={17}/></span><span><strong>{relatedTicket.id} · {relatedTicket.title}</strong><small>{relatedTicket.priority} priority · Open for {relatedTicket.age}</small></span><ChevronRight size={17}/></button></section>}
       <section className="drawer-section"><h3>Recent activity</h3><div className="timeline"><div><span /><p><strong>Device inventory refreshed</strong><small>2 minutes ago via Intune</small></p></div><div><span /><p><strong>Interactive user session detected</strong><small>8 minutes ago via ScreenConnect</small></p></div><div><span /><p><strong>Compliance policy changed</strong><small>Yesterday at 4:32 PM</small></p></div></div></section>
@@ -133,7 +134,7 @@ function QuickActionMenu({ onClose, onInvestigate, onTicket, onReview, onSync }:
 
 export default function App() {
   const { snapshot, runs, stale, syncing, error, refresh } = useSnapshot()
-  const [view, setView] = useState<View>('overview')
+  const [view, setView] = useState<View>('workplace')
   const [company, setCompany] = useState<CompanyId>('all')
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -174,6 +175,7 @@ export default function App() {
   }, [])
 
   const nav = [
+    { id: 'workplace' as View, label: 'Live workplace', icon: Map },
     { id: 'overview' as View, label: 'Overview', icon: LayoutDashboard },
     { id: 'devices' as View, label: 'Devices', icon: Laptop, count: 17 },
     { id: 'tickets' as View, label: 'Tickets', icon: TicketCheck, count: 38 },
@@ -194,7 +196,7 @@ export default function App() {
     {mobileNav && <button className="nav-scrim" aria-label="Close navigation" onClick={() => setMobileNav(false)} />}
     <div className="main-column">
       <header className="topbar"><button className="mobile-menu icon-btn" onClick={() => setMobileNav(true)}><Menu size={20}/></button><div className="company-picker"><button onClick={() => setCompanyOpen(!companyOpen)}><span className="company-logo"><Building2 size={16}/></span><span><small>Workspace</small><strong>{companyNames[company]}</strong></span><ChevronDown size={15}/></button>{companyOpen && <div className="company-menu">{(Object.keys(companyNames) as CompanyId[]).map((id) => <button key={id} onClick={() => { setCompany(id); setCompanyOpen(false) }}><span><strong>{companyNames[id]}</strong><small>{id === 'all' ? '2 companies' : id === 'northstar' ? '824 devices' : '424 devices'}</small></span>{company === id && <Check size={16}/>}</button>)}</div>}</div><span className="demo-pill"><i/>Demo workspace</span><button className="global-search" onClick={() => setSearchOpen(true)}><Search size={17}/><span>Search devices, people or tickets</span><kbd><Command size={11}/> K</kbd></button><div className="top-actions"><button className="icon-btn notification" title="Notifications"><Bell size={19}/><i /></button><span className="top-divider"/><button className="profile"><span className="avatar">AS</span><span><strong>Alex Stone</strong><small>IT Administrator</small></span><ChevronDown size={14}/></button></div></header>
-      <main>{error && <div className="data-notice"><AlertTriangle size={16}/><span><strong>Live sync unavailable.</strong> Showing the most recent local data.</span><button onClick={() => void refresh(true)}>Retry</button></div>}{view === 'overview' && <Overview filteredDevices={filteredDevices} onSelect={setSelectedDevice} onQuickAction={() => setQuickOpen(true)}/>} {view === 'devices' && <DevicesView rows={filteredDevices} onSelect={setSelectedDevice}/>} {view === 'tickets' && <TicketsView tickets={company === 'all' ? snapshot.tickets : filteredTickets} onSelect={setSelectedTicket} onDemoAction={notify}/>} {view === 'integrations' && <IntegrationsView connectors={snapshot.connectors} runs={runs}/>} {view === 'reconciliation' && <ReconciliationView candidates={company === 'all' ? reviewQueue : reviewQueue.filter((item) => item.company === company)} onResolve={(id) => setReviewQueue((items) => items.filter((item) => item.id !== id))}/>}</main>
+      <main className={view === 'workplace' ? 'workplace-main' : ''}>{error && <div className="data-notice"><AlertTriangle size={16}/><span><strong>Live sync unavailable.</strong> Showing the most recent local data.</span><button onClick={() => void refresh(true)}>Retry</button></div>}{view === 'workplace' && <WorkplaceMap devices={filteredDevices} onSelect={setSelectedDevice} onRemote={(device) => notify(`Remote assist for ${device.name} requires a configured ScreenConnect account.`)}/>} {view === 'overview' && <Overview filteredDevices={filteredDevices} onSelect={setSelectedDevice} onQuickAction={() => setQuickOpen(true)}/>} {view === 'devices' && <DevicesView rows={filteredDevices} onSelect={setSelectedDevice}/>} {view === 'tickets' && <TicketsView tickets={company === 'all' ? snapshot.tickets : filteredTickets} onSelect={setSelectedTicket} onDemoAction={notify}/>} {view === 'integrations' && <IntegrationsView connectors={snapshot.connectors} runs={runs}/>} {view === 'reconciliation' && <ReconciliationView candidates={company === 'all' ? reviewQueue : reviewQueue.filter((item) => item.company === company)} onResolve={(id) => setReviewQueue((items) => items.filter((item) => item.id !== id))}/>}</main>
     </div>
     {searchOpen && <div className="modal-layer" onMouseDown={(e) => e.target === e.currentTarget && setSearchOpen(false)}><div className="command-modal"><div className="command-input"><Search size={19}/><input autoFocus placeholder="Search across your entire environment..." value={query} onChange={(e) => setQuery(e.target.value)}/><button onClick={() => setSearchOpen(false)}><kbd>ESC</kbd></button></div><div className="command-results"><span className="result-label">{query ? 'Matching devices' : 'Suggested devices'}</span>{filteredDevices.slice(0, 4).map((device) => <button key={device.id} onClick={() => { setSelectedDevice(device); setSearchOpen(false) }}><span className="device-icon"><Laptop size={16}/></span><span><strong>{device.name}</strong><small>{device.user} · {companyNames[device.company]}</small></span><span className="result-meta"><StatusDot status={device.status}/>{device.lastSeen}</span></button>)}<span className="result-label">Matching tickets</span>{filteredTickets.slice(0, 3).map((ticket) => <button key={ticket.id} onClick={() => { setView('tickets'); setSelectedTicket(ticket); setSearchOpen(false) }}><span className="device-icon"><TicketCheck size={16}/></span><span><strong>{ticket.id} · {ticket.title}</strong><small>{ticket.requester} · {companyNames[ticket.company]}</small></span><span className={`priority-tag ${ticket.priority === 'Urgent' ? 'urgent' : ''}`}>{ticket.priority}</span></button>)}{!filteredDevices.length && !filteredTickets.length && <EmptyState/>}</div><footer><span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span><span><kbd>↵</kbd> Open</span></footer></div></div>}
     {quickOpen && <QuickActionMenu

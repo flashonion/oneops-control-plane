@@ -18,6 +18,8 @@ describe('device reconciliation', () => {
       compliance: 'Noncompliant',
       risk: 91,
       sources: ['atera'],
+      remoteSessionId: 'sc-1',
+      presence: { state: 'online', activity: 'Interactive session', since: '8m', observedAt: '2026-07-20T01:40:00Z', source: 'screenconnect' },
     })
 
     expect(merged.name).toBe('SYD-LT-001')
@@ -25,5 +27,7 @@ describe('device reconciliation', () => {
     expect(merged.compliance).toBe('Noncompliant')
     expect(merged.risk).toBe(91)
     expect(merged.sources).toEqual(['intune', 'atera'])
+    expect(merged.presence?.state).toBe('online')
+    expect(merged.remoteSessionId).toBe('sc-1')
   })
 })

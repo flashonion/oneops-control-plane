@@ -1,4 +1,4 @@
-# OneOps 1.0
+# OneOps 1.1
 
 OneOps is a local-first IT operations control plane that reconciles devices,
 people, tickets, compliance, and remote-support presence across multiple
@@ -14,9 +14,10 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-Open `http://localhost:4173`, then select **Quick action** and
-**Investigate highest risk**. The device record links directly to its urgent
-service desk ticket, demonstrating the complete cross-platform incident journey.
+Open `http://localhost:4173`. The first screen is the **Live workplace**: choose
+an office, select desk `A-04`, and follow Mia Chen's unified device record to the
+urgent service desk ticket. This demonstrates the complete spatial-to-incident
+journey across ScreenConnect, Microsoft, Atera, and Snip-IP.
 
 ## Run locally
 
@@ -39,8 +40,8 @@ port 4173. Run `npm.cmd test` for the API test suite.
 To run the production build in Docker:
 
 ```powershell
-docker build -t oneops:1.0.0 .
-docker run --rm -p 4174:4174 oneops:1.0.0
+docker build -t oneops:1.1.0 .
+docker run --rm -p 4174:4174 oneops:1.1.0
 ```
 
 Open `http://localhost:4174` for the production-served application.
@@ -48,6 +49,8 @@ Open `http://localhost:4174` for the production-served application.
 ## What works
 
 - Multi-company workspace switching
+- Interactive office floor plans with desk, employee, device, presence, and risk
+- Desktop and mobile workplace filters with direct device investigation
 - Unified environment dashboard and health trend
 - Global device search
 - Device inventory filtering and unified record drawer
@@ -56,6 +59,8 @@ Open `http://localhost:4174` for the production-served application.
 - Responsive desktop and mobile layouts
 - Provider-neutral connector contract in `src/services/connectors.ts`
 - Local Express API with parallel connector collection and snapshot caching
+- Microsoft Graph batch presence and ScreenConnect bridge adapters
+- Real `DATA_MODE=live` provider composition with explicit configuration failure
 - Explicit stale-data fallback and background refresh handling
 
 ## Data and security

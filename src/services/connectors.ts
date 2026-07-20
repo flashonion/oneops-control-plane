@@ -18,12 +18,18 @@ const statusRank = { healthy: 0, warning: 1, offline: 2, critical: 3 }
 const complianceRank = { Compliant: 0, 'At risk': 1, Noncompliant: 2 }
 
 export function mergeDevice(current: Device, incoming: Device): Device {
+  const presence = incoming.presence
+    ? { ...incoming.presence, source: current.presence ? 'combined' as const : incoming.presence.source }
+    : current.presence
   return {
     ...current,
     status: statusRank[incoming.status] > statusRank[current.status] ? incoming.status : current.status,
     compliance: complianceRank[incoming.compliance] > complianceRank[current.compliance] ? incoming.compliance : current.compliance,
     risk: Math.max(current.risk, incoming.risk),
     sources: [...new Set([...current.sources, ...incoming.sources])],
+    workplace: current.workplace ?? incoming.workplace,
+    presence,
+    remoteSessionId: incoming.remoteSessionId ?? current.remoteSessionId,
   }
 }
 

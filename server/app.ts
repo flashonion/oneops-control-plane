@@ -3,13 +3,14 @@ import path from 'node:path'
 import express, { type NextFunction, type Request, type Response } from 'express'
 import type { AppConfig } from './config'
 import { createDemoConnectors } from './connectors/demo'
+import { createLiveConnectors } from './connectors/live'
 import { SnapshotStore } from './snapshot-store'
 import { ConnectorTelemetry } from './connector-telemetry'
 
 export function createApp(config: AppConfig) {
   const app = express()
   const telemetry = new ConnectorTelemetry()
-  const adapters = createDemoConnectors().map((adapter) => telemetry.instrument(adapter))
+  const adapters = (config.DATA_MODE === 'live' ? createLiveConnectors(config) : createDemoConnectors()).map((adapter) => telemetry.instrument(adapter))
   const store = new SnapshotStore(adapters, config.SNAPSHOT_TTL_MS)
 
   app.disable('x-powered-by')

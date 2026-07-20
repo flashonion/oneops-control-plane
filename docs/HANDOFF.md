@@ -5,29 +5,37 @@ each meaningful implementation slice.
 
 ## Current state (2026-07-20)
 
-Release `1.0.0` is the Hackathon submission candidate. Two user-testing rounds
-are documented in `docs/USER_TESTING.md`; the release checklist is complete.
+Release `1.1.0` is the current Hackathon submission candidate. Four user-testing
+rounds are documented in `docs/USER_TESTING.md`.
 
-OneOps is a Vite + React + TypeScript prototype using synthetic data. It has four
-interactive views: Overview, Devices, Tickets, and Integrations. Company filters,
+OneOps is a Vite + React + TypeScript prototype using synthetic data. Live
+Workplace is the default view and renders interactive, responsive architectural
+floor plans from canonical workstation and presence data. It shows who is at a
+desk, the assigned computer, presence/activity, online duration, and health risk.
+The other views cover Overview, Devices, Tickets, Integrations, and identity
+review. Company filters,
 global search, device filtering, a detail drawer, and responsive navigation work.
 An Express API now collects demo providers in parallel, caches snapshots, exposes
 health/connector endpoints, and falls back to stale data after a failed refresh.
 The ticket queue opens an enriched context drawer with its linked device. Search
 covers devices and tickets, and keyboard open/close shortcuts work. The analytics
 chart is lazy-loaded.
-`MicrosoftGraphConnector` implements read-only Intune device pagination and
-mapping behind an injected token provider. It is not active in demo mode.
+`MicrosoftGraphConnector` implements read-only Intune device pagination, mapping,
+and optional batched Teams presence. `ScreenConnectConnector` consumes a
+documented read-only bridge contract for endpoint sessions and activity.
 `AteraConnector` now implements read-only paginated agents and tickets behind an
 injected API key and company resolver. Connector operations emit sanitised run
 telemetry shown on Integrations. A functional identity review queue handles
-ambiguous cross-provider matches. The production build, lint, and thirteen tests
-pass after this milestone.
+ambiguous cross-provider matches. `DATA_MODE=live` composes configured Graph,
+Atera, and ScreenConnect adapters and fails closed if none are configured. The
+production build, lint, and seventeen tests pass after this milestone.
 
 Important files:
 
 - `src/App.tsx`: views and interactions
 - `src/components/HealthChart.tsx`: lazy-loaded Recharts analytics module
+- `src/components/WorkplaceMap.tsx`: interactive floor plan and activity rail
+- `src/workplace.ts`: versionable office zones and site definitions
 - `src/styles.css`: complete responsive visual system
 - `src/types.ts`: canonical UI domain types
 - `src/data.ts`: fictional demo dataset
@@ -40,6 +48,8 @@ Important files:
   non-production token provider
 - `server/connectors/atera.ts`: tested Atera adapter awaiting a restricted token
   and customer-to-company mapping
+- `server/connectors/screenconnect.ts`: tested read-only session bridge adapter
+- `server/connectors/live.ts`: live provider composition and Microsoft token cache
 - `server/connector-telemetry.ts`: bounded operation diagnostics and sanitisation
 - `src/reconciliation.ts`: demo identity candidates and review types
 - `docs/ARCHITECTURE.md`: target production design and identity rules
@@ -59,17 +69,19 @@ Important files:
 
 1. Split the large `App.tsx` into route and component modules.
 2. Add OIDC, PostgreSQL persistence, and provider-secret storage to `/api/v1`.
-3. Implement Microsoft Graph adapter against a non-production tenant.
+3. Validate Microsoft Graph presence against a non-production tenant.
 4. Add PostgreSQL models for organisations, source records, unified records,
    connector runs, and audit events.
 5. Add Vitest component tests and Playwright workflow tests.
-6. Validate the Atera adapter against its account-specific Swagger schema, then
-   follow with Snip-IP and ScreenConnect discovery spikes.
+6. Validate Atera and the ScreenConnect bridge against non-production accounts,
+   then follow with the Snip-IP discovery spike.
 7. Persist identity reconciliation decisions as audited API commands.
 
 ## Known limitations
 
-- All metrics and timestamps are static demo values.
+- Demo metrics and timestamps are static; presence changes require live providers.
+- Floor geometry and desk assignments are configured in source until the planned
+  floor-plan editor and database persistence are added.
 - Search opens ticket results at the ticket queue; selecting the exact ticket
   from search is not yet implemented.
 - Remote session and mutation buttons are visual placeholders.

@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0 - 2026-07-20
+
+### Added
+
+- Live Workplace as the default OneOps experience
+- Interactive architectural floor plans for Northstar HQ and Harbour Studio
+- Desk-level employee, computer, presence, activity duration, and device risk
+- Office, presence, and company filters with responsive mobile panning
+- Microsoft Graph batch presence collection using `getPresencesByUserId`
+- Read-only ScreenConnect bridge adapter with canonical session mapping
+- Live provider composition for Graph, Atera, and ScreenConnect
+- Privacy and data-freshness guidance for workplace presence
+
+### Changed
+
+- Device records now retain workstation, presence, and remote-session evidence
+- Live mode fails closed when no provider has been configured
+- The device drawer shows workstation and live-presence context
+
 ## 1.0.0 - 2026-07-20
 
 ### Added

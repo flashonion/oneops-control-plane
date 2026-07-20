@@ -82,6 +82,21 @@ Initial roles:
 - Show stale data explicitly; never silently convert sync failure into “offline”.
 - Record connector runs with counts, duration, cursor, and sanitised error detail.
 
+## Workplace map
+
+The map is driven by normalised `Device.workplace` and `Device.presence` fields.
+Floor coordinates are percentages within a versioned site layout, so the same
+layout works at different viewport sizes. A desk assignment belongs to OneOps
+configuration; provider data enriches who and what is present but does not get to
+move a workstation automatically.
+
+Presence is evidence, not attendance tracking. ScreenConnect indicates endpoint
+connectivity and recent interactive activity; Microsoft presence indicates user
+availability and activity. OneOps records the source and observation timestamp,
+shows stale/unknown states explicitly, and combines sources only after identity
+reconciliation. Production retention and employee visibility must be agreed with
+the company's privacy policy before historical occupancy reporting is enabled.
+
 ## Write actions
 
 Remote access, password changes, device retire/wipe, and ticket mutation are out

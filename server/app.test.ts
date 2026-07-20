@@ -7,6 +7,7 @@ const config = {
   PORT: 4174,
   DATA_MODE: 'demo' as const,
   SNAPSHOT_TTL_MS: 30_000,
+  MICROSOFT_GRAPH_PRESENCE_ENABLED: false,
 }
 
 describe('OneOps API', () => {
@@ -41,5 +42,9 @@ describe('OneOps API', () => {
     expect(response.body.data).toHaveLength(12)
     expect(response.body.data[0]).toMatchObject({ status: 'success' })
     expect(response.body.data[0]).not.toHaveProperty('credentials')
+  })
+
+  it('does not silently fall back to demo providers in live mode', () => {
+    expect(() => createApp({ ...config, DATA_MODE: 'live' })).toThrow('requires at least one configured provider')
   })
 })

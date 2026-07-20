@@ -4,14 +4,14 @@
 
 **OneOps: One operational view for every IT system**
 
-Release: **1.0.0**
+Release: **1.1.0**
 
 ## Short description
 
-OneOps turns fragmented IT tooling into a unified multi-company control plane.
-It reconciles device health, Microsoft Intune compliance, Atera tickets,
-ScreenConnect availability, and internal network inventory into one searchable,
-action-oriented workspace.
+OneOps turns fragmented IT tooling into a living multi-company workplace map.
+It reconciles each physical desk, employee, computer, Microsoft presence, Intune
+compliance, Atera ticket, ScreenConnect session, and internal network record into
+one spatial, searchable, action-oriented workspace.
 
 ## The problem
 
@@ -24,22 +24,22 @@ correct company scope.
 ## The solution
 
 OneOps creates a canonical record for each device while retaining links and
-provenance from every source. It prioritises urgent work, shows stale integration
-data honestly, and keeps provider credentials in the backend. Operators use one
-search and one company switcher, then deep-link into specialist products only
-when an action requires them.
+provenance from every source. Its Live Workplace shows exactly which desk is in
+use, by whom, on which computer, for how long, and whether that endpoint needs
+attention. It shows stale integration data honestly and keeps provider
+credentials in the backend.
 
 ## Three-minute demo
 
-1. Open Overview and point out the environment-level health, compliance, ticket,
-   and alert summaries.
-2. Select the urgent noncompliant-device item and show the unified device record,
-   source coverage, risk score, user, IP, and timeline.
-3. Open Tickets, select `INC-2841`, and show that the urgent BitLocker request is
+1. Open Live Workplace and identify Northstar HQ, Level 5, active headcount, and
+   the architectural floor plan.
+2. Select Mia Chen at desk `A-04`; show her computer, live presence, session
+   duration, risk, and provider coverage in the unified record.
+3. Follow the related `INC-2841` ticket and show that the BitLocker request is
    automatically linked to `SYD-LT-042` and its critical health state.
 4. Press `Ctrl/Cmd + K`, search for a hostname or requester, and show results
    spanning both devices and tickets.
-5. Switch company scope and show the inventory boundary change immediately.
+5. Switch to Harbour Studio and show that its floor and staff replace Northstar.
 6. Open Integrations and explain that each provider is isolated behind a common
    adapter with its own sync health.
 7. Trigger refresh and show the live synchronisation timestamp.
@@ -54,29 +54,32 @@ when an action requires them.
   most severe health/compliance signal
 - Lazy-loaded analytics chart, reducing the main JavaScript bundle by about 60%
 - Least-privilege, backend-only credential design with structured error responses
-- Thirteen automated tests covering API contracts, caching, failure fallback,
+- Seventeen automated tests covering API contracts, caching, failure fallback,
   provider mapping, telemetry sanitisation, and reconciliation
 - Operator review queue for ambiguous device matches instead of unsafe automatic
   merging
 - Live connector operation diagnostics with sanitised error reporting
+- Batched Microsoft Graph presence plus a tested read-only ScreenConnect bridge
+- Floor-plan coordinates kept separate from provider-owned presence evidence
 
 ## What is real today
 
 The full UI, local API, connector orchestration, caching, reconciliation,
 polling, manual refresh, company scoping, and workflows run locally. Provider
 responses are synthetic because production company accounts are intentionally
-not connected during the Hackathon build.
+not connected during the Hackathon build. Live provider composition and
+credential acquisition are implemented server-side for non-production testing.
 
-Two task-based user-testing rounds cover a first-time judge on desktop and an
-on-call IT administrator at a 390x844 mobile viewport. The first round produced
-a direct device-to-ticket navigation improvement; the second round completed
-without release-blocking findings. See `docs/USER_TESTING.md` for evidence.
+Four task-based user-testing rounds cover a first-time judge, an on-call IT
+administrator, a workplace operations lead, and a mobile service desk operator.
+They include desktop and true 390x844 mobile verification. See
+`docs/USER_TESTING.md` for evidence and fixes.
 
 ## Next milestone
 
-Connect a non-production Microsoft tenant through Graph, validate twenty known
-devices, then add a read-only Atera token. ScreenConnect and Snip-IP follow after
-their instance-specific API and identity fields are confirmed.
+Connect a non-production Microsoft tenant and ScreenConnect bridge, validate
+twenty known desk/device/user matches, then add a read-only Atera token. Snip-IP
+follows after its internal API and identity fields are confirmed.
 
 ## Responsible design
 

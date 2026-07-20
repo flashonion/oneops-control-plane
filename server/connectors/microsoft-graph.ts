@@ -3,6 +3,7 @@ import type { Device } from '../../src/types'
 
 interface GraphManagedDevice {
   id: string
+  userId?: string
   deviceName?: string
   userDisplayName?: string
   userPrincipalName?: string
@@ -12,6 +13,12 @@ interface GraphManagedDevice {
   complianceState?: string
   lastSyncDateTime?: string
   wiFiMacAddress?: string
+}
+
+interface GraphPresence {
+  id: string
+  availability?: string
+  activity?: string
 }
 
 interface GraphPage<T> {
@@ -57,6 +64,25 @@ export function mapManagedDevice(item: GraphManagedDevice, company: Device['comp
   }
 }
 
+function presenceState(value?: string): NonNullable<Device['presence']>['state'] {
+  if (value === 'Available' || value === 'AvailableIdle') return 'online'
+  if (value === 'Busy' || value === 'DoNotDisturb') return 'busy'
+  if (value === 'Away' || value === 'BeRightBack') return 'away'
+  return 'offline'
+}
+
+export async function collectGraphPresences(userIds: string[], token: string, fetchImpl: typeof fetch = fetch) {
+  if (!userIds.length) return new Map<string, GraphPresence>()
+  const response = await fetchImpl('https://graph.microsoft.com/v1.0/communications/getPresencesByUserId', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${token}`, accept: 'application/json', 'content-type': 'application/json' },
+    body: JSON.stringify({ ids: [...new Set(userIds)].slice(0, 650) }),
+  })
+  if (!response.ok) throw new Error(`Microsoft Graph presence failed (${response.status})`)
+  const page = await response.json() as GraphPage<GraphPresence>
+  return new Map(page.value.map((presence) => [presence.id, presence]))
+}
+
 export class MicrosoftGraphConnector implements ConnectorAdapter {
   readonly id = 'intune' as const
   private inFlight: Promise<Device[]> | null = null
@@ -65,11 +91,12 @@ export class MicrosoftGraphConnector implements ConnectorAdapter {
     private readonly tokenProvider: TokenProvider,
     private readonly company: Device['company'],
     private readonly fetchImpl: typeof fetch = fetch,
+    private readonly includePresence = false,
   ) {}
 
   private async collectDevices() {
     const token = await this.tokenProvider()
-    const fields = 'id,deviceName,userDisplayName,userPrincipalName,operatingSystem,osVersion,model,complianceState,lastSyncDateTime,wiFiMacAddress'
+    const fields = 'id,userId,deviceName,userDisplayName,userPrincipalName,operatingSystem,osVersion,model,complianceState,lastSyncDateTime,wiFiMacAddress'
     let url: string | undefined = `https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$select=${fields}`
     const records: GraphManagedDevice[] = []
 
@@ -81,7 +108,24 @@ export class MicrosoftGraphConnector implements ConnectorAdapter {
       url = page['@odata.nextLink']
     }
 
-    return records.map((item) => mapManagedDevice(item, this.company))
+    const devices = records.map((item) => mapManagedDevice(item, this.company))
+    if (!this.includePresence) return devices
+
+    const presences = await collectGraphPresences(records.flatMap((item) => item.userId ? [item.userId] : []), token, this.fetchImpl)
+    return devices.map((device, index) => {
+      const presence = records[index].userId ? presences.get(records[index].userId) : undefined
+      if (!presence) return device
+      return {
+        ...device,
+        presence: {
+          state: presenceState(presence.availability),
+          activity: presence.activity || presence.availability || 'Unknown',
+          since: 'Live',
+          observedAt: new Date().toISOString(),
+          source: 'microsoft' as const,
+        },
+      }
+    })
   }
 
   private loadDevices() {

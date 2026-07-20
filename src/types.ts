@@ -1,6 +1,25 @@
 export type CompanyId = 'northstar' | 'harbour' | 'all'
 export type DeviceStatus = 'healthy' | 'warning' | 'critical' | 'offline'
 export type SourceId = 'intune' | 'atera' | 'screenconnect' | 'snip-ip'
+export type PresenceState = 'online' | 'busy' | 'away' | 'offline'
+
+export interface WorkplaceAssignment {
+  siteId: string
+  siteName: string
+  floor: string
+  deskId: string
+  x: number
+  y: number
+  rotation?: 0 | 90 | 180 | 270
+}
+
+export interface DevicePresence {
+  state: PresenceState
+  activity: string
+  since: string
+  observedAt: string
+  source: 'microsoft' | 'screenconnect' | 'combined'
+}
 
 export interface Device {
   id: string
@@ -16,6 +35,9 @@ export interface Device {
   sources: SourceId[]
   risk: number
   ip: string
+  workplace?: WorkplaceAssignment
+  presence?: DevicePresence
+  remoteSessionId?: string
 }
 
 export interface Ticket {

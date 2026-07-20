@@ -14,6 +14,26 @@ Initial endpoint:
 GET https://graph.microsoft.com/v1.0/deviceManagement/managedDevices
 ```
 
+The workplace map can enrich those device records with Microsoft Teams presence
+in a single bounded request:
+
+```http
+POST https://graph.microsoft.com/v1.0/communications/getPresencesByUserId
+Content-Type: application/json
+
+{ "ids": ["entra-user-id"] }
+```
+
+`collectGraphPresences` implements this call with de-duplication and the documented
+650-user maximum per request. It requires `Presence.Read.All`. For larger tenants,
+split users into batches and move to Graph presence change notifications so the UI
+does not depend on constant polling.
+
+The stable Intune resource identifies the primary/enrolled user through `userId`.
+The more precise `usersLoggedOn` signal currently lives in Microsoft Graph beta;
+keep it behind an opt-in feature flag and never treat its absence as proof that a
+desk is empty.
+
 `server/connectors/microsoft-graph.ts` now implements the read-only endpoint,
 pagination, canonical mapping, error handling, and shared concurrent collection.
 It accepts an injected token provider and is intentionally not activated until a
@@ -62,6 +82,31 @@ For the pilot, obtain the instance version and hosting model, then build a small
 read-only private extension/service that exposes only the required session
 presence and machine metadata. Deep-link remote launch should remain a separate,
 audited user action.
+
+`server/connectors/screenconnect.ts` implements the OneOps side of that bridge.
+It calls `GET /api/oneops/v1/sessions` with a dedicated bearer token and expects:
+
+```json
+{
+  "sessions": [{
+    "id": "screenconnect-session-id",
+    "deviceId": "oneops-canonical-device-id",
+    "machineName": "SYD-LT-042",
+    "userDisplayName": "Mia Chen",
+    "connected": true,
+    "connectedAt": "2026-07-20T00:02:00Z",
+    "lastActivityAt": "2026-07-20T01:39:00Z",
+    "idleMinutes": 2,
+    "operatingSystem": "Windows 11",
+    "model": "Surface Laptop 6",
+    "ipAddress": "10.24.8.42"
+  }]
+}
+```
+
+Host the bridge inside ScreenConnect as a private extension or beside the server,
+restrict it by network and token scope, and return only sessions authorised for
+that OneOps organisation. Do not expose ScreenConnect credentials to the browser.
 
 References:
 

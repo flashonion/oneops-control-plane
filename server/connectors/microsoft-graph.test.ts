@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { mapManagedDevice, MicrosoftGraphConnector } from './microsoft-graph'
+import { collectGraphPresences, mapManagedDevice, MicrosoftGraphConnector } from './microsoft-graph'
 
 describe('MicrosoftGraphConnector', () => {
   it('maps Intune compliance into the canonical risk model', () => {
@@ -28,5 +28,12 @@ describe('MicrosoftGraphConnector', () => {
     expect(health.records).toBe('2')
     expect(token).toHaveBeenCalledTimes(1)
     expect(fetcher).toHaveBeenCalledTimes(2)
+  })
+
+  it('collects Microsoft presence in one bounded batch', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ value: [{ id: 'user-1', availability: 'Busy', activity: 'InACall' }] }), { status: 200 }))
+    const result = await collectGraphPresences(['user-1', 'user-1'], 'test-token', fetcher)
+    expect(result.get('user-1')?.activity).toBe('InACall')
+    expect(fetcher).toHaveBeenCalledWith('https://graph.microsoft.com/v1.0/communications/getPresencesByUserId', expect.objectContaining({ method: 'POST', body: JSON.stringify({ ids: ['user-1'] }) }))
   })
 })
